@@ -35,7 +35,7 @@ def token_user():
 
 def uploaded_photo():
     """Выгрузка своего фото на сервер"""
-    image = 'photo_2021-07-28_22-42-55.jpg'
+    image = 'photo_2021-07-30_10-52-29.jpg'
     attachments = []
     upload_image = upload.photo_messages(photos=image)[0]
     attachments.append(f'photo{upload_image["owner_id"]}_{upload_image["id"]}')
@@ -131,7 +131,7 @@ while True:
                         # print(f'photo-206157126_{photo_id[10:]}')
                         vk.messages.send(user_id=event.user_id,
                                          message=message_id,
-                                         attachment=answer,
+                                         attachment=attachments,
                                          # "sel=-206157126&z=photo222256657_457242759"
                                          random_id=0)
     except:

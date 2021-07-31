@@ -1,10 +1,8 @@
 import math
 
-print()
+import requests
+from PIL import Image
 
-a = 9/2
-print(a)
-print(int(a))
+text = 'del 20123'
 
-
-# print(math.ceil(a))
+print(int(text.replace('del','').strip()))
