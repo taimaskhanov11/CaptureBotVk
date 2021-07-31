@@ -73,7 +73,8 @@ def run():
                                                          attachment=i,
                                                          random_id=0)
                                     vk.messages.send(peer_id=event.obj.peer_id,
-                                                     message=f'Общая сумма {photo_change.total_sum} р',
+                                                     message=f'Общая сумма {photo_change.total_sum} р\n'
+                                                             f'{"="*30}',
                                                      # attachment=i,
                                                      random_id=0)
                                     photo_data = {}

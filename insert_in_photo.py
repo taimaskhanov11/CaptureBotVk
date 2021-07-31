@@ -150,7 +150,7 @@ class PhotoChanger:
                 d.text((x + off, y - off), text, font=font, fill=shadowColor)
 
                 d.text((x, y), text, font=font, fill="black")
-            im.show()
+            # im.show()
             im.save(f'{name}.jpg')
 
         # with Image.open(photo) as im:
