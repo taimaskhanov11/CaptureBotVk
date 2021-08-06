@@ -74,7 +74,7 @@ def run():
                                                          random_id=0)
                                     vk.messages.send(peer_id=event.obj.peer_id,
                                                      message=f'Общая сумма {photo_change.total_sum} р\n'
-                                                             f'{"="*30}',
+                                                             f'{"=" * 30}',
                                                      # attachment=i,
                                                      random_id=0)
                                     photo_data = {}
@@ -82,11 +82,15 @@ def run():
                                         json.dump(photo_data, ff, indent=4, ensure_ascii=False)
                                 elif text.lower() == 'start':
                                     vk.messages.send(peer_id=event.obj.peer_id,
-                                                     message="Начинайте отправлять фото, редактируйте.\n"
+                                                     message="Данные обнулены. Начинайте отправлять фото, редактируйте.\n"
                                                              "Как только все закончите отправляете команду stop\n"
                                                              "В ответ придут все фото с инфой и в самом конце общая сумма.",
                                                      # attachment=i,
                                                      random_id=0)
+                                    photo_data = {}
+                                    with open('photo_data.json', 'w', encoding='utf8') as ff:
+                                        json.dump(photo_data, ff, indent=4, ensure_ascii=False)
+
                                 elif 'del' in text.lower():
                                     photo_id = text.replace('del', '').strip()
                                     try:
@@ -95,6 +99,10 @@ def run():
                                                          message='Удалено из базы',
                                                          # "sel=-206157126&z=photo222256657_457242759"
                                                          random_id=0)
+                                        with open('photo_data.json', 'w', encoding='utf8') as ff:
+                                            json.dump(photo_data, ff, indent=4, ensure_ascii=False)
+
+
                                     except Exception as e:
                                         print(e)
                                         vk.messages.send(peer_id=event.obj.peer_id,
