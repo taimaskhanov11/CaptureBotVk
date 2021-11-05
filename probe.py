@@ -1,8 +1,6 @@
-import math
+a = 123
+b =321
 
-import requests
-from PIL import Image
 
-text = 'del 20123'
-
-print(int(text.replace('del','').strip()))
+c = int(f'{a}{b}')
+print(c)

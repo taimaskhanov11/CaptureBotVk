@@ -1,24 +1,29 @@
 import json
+import os
 import re
+import time
 
 import requests
 import vk_api
 from PIL import Image, ImageDraw, ImageFont
 from vk_api import VkUpload
 
-
 # re.findall('(\d+)', '2BNKLOPY5T')
+from database import Photo
+
+token = "801eda3728281a02aef2e3da3c81cdb28934368c5316b84584f24b39555ead41379240479957aa11159cc"
 
 
 class PhotoChanger:
 
-    def __init__(self):
+    def __init__(self, owner_id):
 
-        self.token = "801eda3728281a02aef2e3da3c81cdb28934368c5316b84584f24b39555ead41379240479957aa11159cc"
-        self.session = vk_api.VkApi(token=self.token)
+        self.session = vk_api.VkApi(token=token)
         self.vk = self.session.get_api()
         self.upload = VkUpload(self.session)
 
+        self.owner_id = owner_id
+        self.count_obj = 0
         self.total_sum = 0
         self.photo_data = {}
         self.attached_img = []
@@ -39,6 +44,59 @@ class PhotoChanger:
             self.uploaded_photo(f'{name}.jpg')
 
         print(f'Общая сумма {self.total_sum} рублей')
+
+    def send_message(self, message):
+        self.vk.messages.send(peer_id=self.owner_id,
+                              message=message,
+                              # attachment=i,
+                              random_id=0)
+
+    def send_attach_message(self, attachment, message_id):
+        self.vk.messages.send(peer_id=self.owner_id,
+                              message=message_id,
+                              attachment=attachment,
+                              random_id=0)
+
+    def start(self):
+        objects = Photo.get_all_photo(owner_id=self.owner_id)
+        # print(self.photo_data)
+        self.count_obj = len(objects)
+        self.send_message(f'Загружено всего объектов {len(objects)}')
+
+        for obj in objects:
+            try:
+                text = obj.text
+                if not text:
+                    continue
+                name = f'{obj.unique_id}.jpg'
+                photo_path = f'photos/{obj.unique_id}.jpg'
+                url = obj.photo_url
+                try:
+                    photo = requests.get(url, stream=True, timeout=30).raw
+                except Exception as e:
+                    print(e)
+                    continue
+                self.write_photo(photo, text, photo_path)
+                time.sleep(0.5)
+                attach = self.uploaded_photo(photo_path)
+                time.sleep(0.5)
+
+                self.send_attach_message(attach, f'{obj.message_id}')
+
+                self.del_photo_file(photo_path)
+
+                obj.delete_instance()
+
+            except Exception as e:
+                print(e)
+                self.send_message(f'Ошибка! id photo {obj.message_id}')
+
+        self.send_message(f'Общая сумма {self.total_sum}\nВсего объектов {self.count_obj} р\n{"=" * 30}')
+
+        print(f'Общая сумма {self.total_sum} рублей')
+
+    def del_photo_file(self, photo_path):
+        os.remove(photo_path)
 
     def uploaded_photo(self, image):
         """Выгрузка своего фото на сервер"""
@@ -106,7 +164,7 @@ class PhotoChanger:
         # print(self.total_sum)
         return answer
 
-    def write_photo(self, photo, text, name):
+    def write_photo(self, photo, text, path):
         with Image.open(photo) as im:
             text = self.analyze_text(text)
             x = 5
@@ -151,7 +209,7 @@ class PhotoChanger:
 
                 d.text((x, y), text, font=font, fill="black")
             # im.show()
-            im.save(f'{name}.jpg')
+            im.save(path)
 
         # with Image.open(photo) as im:
         #     draw_text = ImageDraw.Draw(im)
@@ -194,9 +252,12 @@ class PhotoChanger:
 
 
 if __name__ == '__main__':
-    photo_change = PhotoChanger()
+    owner_id = 424862770
+    photo_change = PhotoChanger(owner_id)
     # photo_change.write_photo()
-    photo_change.run()
+    photo_change.start()
     # analyze_text(123)
-    pass
+
     # analyze_text()
+
+# todo удалять в самом конце завершенные
