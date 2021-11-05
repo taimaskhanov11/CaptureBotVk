@@ -72,10 +72,10 @@ def add_photo():
 
 if __name__ == '__main__':
     # Photo.create()
-    # db.create_tables([Photo])
+    db.create_tables([Photo])
     # add_photo()
-    obj = Photo.get(unique_id=13)
-    obj.delete_instance()
+    # obj = Photo.get(unique_id=13)
+    # obj.delete_instance()
     # obj = Photo.get_all_photo(owner_id=1)
     # obj[0].delete_instance()
     # print(obj[0].owner_id)
