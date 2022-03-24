@@ -43,6 +43,7 @@ def send_message(peer_id, message):
 def run():
     while True:
         try:
+            logger.info("Запуск скрипта")
             for event in long_poll.listen():
                 # pprint(event)
                 try:
@@ -79,6 +80,9 @@ def run():
                                     photo_change.start()
 
                                 elif text.lower() == 'start':
+                                    photo_change = PhotoChanger(owner_id=event.obj.from_id)
+                                    # photo_change.write_photo()
+                                    photo_change.start()
                                     send_message(user_id, "Данные обнулены. Начинайте отправлять фото, редактируйте.\n"
                                                           "Как только все закончите отправляете команду stop\n"
                                                           "В ответ придут все фото с инфой и в самом конце общая сумма.")
