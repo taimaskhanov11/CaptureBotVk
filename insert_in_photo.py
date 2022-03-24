@@ -82,9 +82,9 @@ class PhotoChanger:
                 else:
                     with Image.open(photo) as im:
                         im.save(photo_path)
-                time.sleep(0.5)
+                # time.sleep(0.5)
                 attach = self.uploaded_photo(photo_path)
-                time.sleep(0.5)
+                # time.sleep(0.5)
 
                 if text:
                     self.send_attach_message(attach, f'{obj.message_id}')
