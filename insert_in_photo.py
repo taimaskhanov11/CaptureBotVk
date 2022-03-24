@@ -68,11 +68,8 @@ class PhotoChanger:
             try:
                 text = obj.text
                 photo_path = f'photos/{obj.unique_id}.jpg'
-                if not text:
-                    self.del_photo_file(photo_path)
-                    obj.delete_instance()
-                    self.send_message(f'Нет описания. Удален photo id{obj.message_id}')
-                    continue
+                # if not text:
+                #     continue
                 name = f'{obj.unique_id}.jpg'
                 url = obj.photo_url
                 try:
@@ -80,12 +77,16 @@ class PhotoChanger:
                 except Exception as e:
                     logger.critical(e)
                     continue
-                self.write_photo(photo, text, photo_path)
+                if text:
+                    self.write_photo(photo, text, photo_path)
                 time.sleep(0.5)
                 attach = self.uploaded_photo(photo_path)
                 time.sleep(0.5)
 
-                self.send_attach_message(attach, f'{obj.message_id}')
+                if text:
+                    self.send_attach_message(attach, f'{obj.message_id}')
+                else:
+                    self.send_message(f'Нет описания. Удален photo id{obj.message_id}')
                 self.del_photo_file(photo_path)
                 obj.delete_instance()
                 logger.debug("Файл удален из базы")
