@@ -6,6 +6,7 @@ import time
 import requests
 import vk_api
 from PIL import Image, ImageDraw, ImageFont
+from loguru import logger
 from vk_api import VkUpload
 
 # re.findall('(\d+)', '2BNKLOPY5T')
@@ -43,7 +44,7 @@ class PhotoChanger:
 
             self.uploaded_photo(f'{name}.jpg')
 
-        print(f'Общая сумма {self.total_sum} рублей')
+        logger.info(f'Общая сумма {self.total_sum} рублей')
 
     def send_message(self, message):
         self.vk.messages.send(peer_id=self.owner_id,
@@ -74,7 +75,7 @@ class PhotoChanger:
                 try:
                     photo = requests.get(url, stream=True, timeout=30).raw
                 except Exception as e:
-                    print(e)
+                    logger.critical(e)
                     continue
                 self.write_photo(photo, text, photo_path)
                 time.sleep(0.5)
@@ -82,18 +83,16 @@ class PhotoChanger:
                 time.sleep(0.5)
 
                 self.send_attach_message(attach, f'{obj.message_id}')
-
                 self.del_photo_file(photo_path)
-
                 obj.delete_instance()
-
+                logger.debug("Файл удален из базы")
             except Exception as e:
-                print(e)
+                logger.critical(e)
                 self.send_message(f'Ошибка! id photo {obj.message_id}')
 
         self.send_message(f'Общая сумма {self.total_sum}\nВсего объектов {self.count_obj} р\n{"=" * 30}')
 
-        print(f'Общая сумма {self.total_sum} рублей')
+        logger.info(f'Общая сумма {self.total_sum} рублей')
 
     def del_photo_file(self, photo_path):
         os.remove(photo_path)
@@ -123,14 +122,14 @@ class PhotoChanger:
             text = text.replace(word, '').strip()
 
         lst_text = text.split()
-        print(lst_text)
+        # print(lst_text)
 
         # quantity = filter(lambda x: 'шт' in x, lst_text)
 
         quantity = re.findall('\d+шт|\d+\sшт', text)
-        print(quantity)
+        # print(quantity)
         # amount_str = lst_text[-1]
-        print(text)
+        # print(text)
 
         # re_amount = ['\d+\sр$', '\d+\sру', '\d+ру', '\d+р$']
         # find money

@@ -1,6 +1,7 @@
-import json
-from pprint import pprint
+import sys
+from pathlib import Path
 
+from loguru import logger
 from vk_api import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 
@@ -13,14 +14,24 @@ vk = session.get_api()
 id_group = 206157126
 long_poll = VkBotLongPoll(session, id_group)
 
+logger.remove()
+logger.add(
+    sink=sys.stderr,
+    level="TRACE",
+    enqueue=True,
+    diagnose=True,
+)
+logger.add(
+    sink=Path("logs/main.log"),
+    level="TRACE",
+    enqueue=True,
+    encoding="utf-8",
+    diagnose=True,
+    rotation="5MB",
+    compression="zip",
+)
 
-# try:
-#     with open('photo_data.json', 'r', encoding='utf-8-sig') as ff:
-#         # if ff.read():
-#         photo_data = json.load(ff)
-# except:
-#     photo_data = {}
-# pprint(photo_data)
+
 def send_message(peer_id, message):
     vk.messages.send(peer_id=peer_id,
                      message=message,
@@ -30,7 +41,6 @@ def send_message(peer_id, message):
 
 
 def run():
-    global photo_data
     while True:
         try:
             for event in long_poll.listen():
@@ -41,7 +51,6 @@ def run():
                             # pprint(event.raw)  # todo
                             user_id = event.obj.from_id
                             if event.obj.attachments:
-                                print('atach')
                                 photo_id = event.obj.attachments[0]['photo']['id']
                                 owner_id = event.obj.attachments[0]['photo']['owner_id']
                                 access_key = event.obj.attachments[0]['photo']['access_key']
@@ -58,7 +67,7 @@ def run():
                                              photo_url=photo_url['url'],
                                              text=text)
 
-                                print('message_id',message_id)
+                                print('message_id', message_id)
                                 print('user_id', user_id)
                                 send_message(user_id, f'Фото добавлено в базу| id photo {message_id}')
 
@@ -99,7 +108,6 @@ def run():
                             message_id = event.obj.conversation_message_id
                             owner_id = event.obj.from_id
                             message_text = event.obj.text
-                            print(owner_id)
                             unique_id = int(f'{owner_id}{message_id}')
                             photo = Photo.get_photo(unique_id)
                             if photo:
@@ -110,11 +118,11 @@ def run():
                     elif event.type == VkBotEventType.MESSAGE_DENY:
                         print('qwe')
                 except Exception as e:
-                    print(e)
+                    logger.critical(e)
                     send_message(event.obj.from_id, 'Ошибка в тексте')
 
         except Exception as e:
-            print(e)
+            logger.critical(e)
             pass
 
 
