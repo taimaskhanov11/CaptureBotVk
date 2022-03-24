@@ -90,7 +90,7 @@ class PhotoChanger:
                 logger.critical(e)
                 self.send_message(f'Ошибка! id photo {obj.message_id}')
 
-        self.send_message(f'Общая сумма {self.total_sum}\nВсего объектов {self.count_obj} р\n{"=" * 30}')
+        self.send_message(f'Общая сумма {self.total_sum}р \nВсего объектов {self.count_obj}\n{"=" * 30}')
 
         logger.info(f'Общая сумма {self.total_sum} рублей')
 

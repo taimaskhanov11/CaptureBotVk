@@ -99,7 +99,7 @@ def run():
                                             send_message(user_id, 'Нету в базе')
 
                                     except Exception as e:
-                                        print(e)
+                                        logger.critical(e)
                                         send_message(user_id, 'Ошибка')
                                     #
                                 # pprint('else')
