@@ -79,6 +79,9 @@ class PhotoChanger:
                     continue
                 if text:
                     self.write_photo(photo, text, photo_path)
+                else:
+                    with Image.open(photo) as im:
+                        im.save(photo_path)
                 time.sleep(0.5)
                 attach = self.uploaded_photo(photo_path)
                 time.sleep(0.5)
