@@ -67,10 +67,13 @@ class PhotoChanger:
         for obj in objects:
             try:
                 text = obj.text
+                photo_path = f'photos/{obj.unique_id}.jpg'
                 if not text:
+                    self.del_photo_file(photo_path)
+                    obj.delete_instance()
+                    self.send_message(f'Нет описания. Удален photo id{obj.message_id}')
                     continue
                 name = f'{obj.unique_id}.jpg'
-                photo_path = f'photos/{obj.unique_id}.jpg'
                 url = obj.photo_url
                 try:
                     photo = requests.get(url, stream=True, timeout=30).raw
